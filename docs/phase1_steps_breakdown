@@ -1,0 +1,40 @@
+Step-by-Step Plan
+🧱 Step 1: Database Setup (PostgreSQL + SQLAlchemy)
+Install PostgreSQL
+
+Create a database (e.g., iot_data)
+
+Create a readings table via SQLAlchemy
+
+🌐 Step 2: Flask API Setup
+POST /api/data to receive sensor data
+
+Add X-API-KEY header validation
+
+Save data to PostgreSQL via SQLAlchemy
+
+🌍 Step 3: ESP8266 Arduino Sketch
+Connect to Wi-Fi
+
+Read DHT11
+
+Format JSON: {"temperature": 28.5, "humidity": 40.2}
+
+Send HTTP POST to Flask API with headers
+
+🔒 Step 4: Secrets and Config
+Store API keys, DB creds in .env
+
+Use python-dotenv to load them securely
+
+📁 Project Structure (initial)
+bash
+Copy
+Edit
+/iot-api/
+│
+├── app.py                # Flask app
+├── models.py             # SQLAlchemy models
+├── .env                  # API key, DB URL
+├── requirements.txt
+└── db_init.py            # Script to create tables

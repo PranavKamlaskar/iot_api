@@ -1,0 +1,28 @@
+2025-05-04 17:38:48,109 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.128.0.2:5000
+2025-05-04 17:38:48,109 - INFO - [33mPress CTRL+C to quit[0m
+2025-05-04 17:39:00,633 - INFO - Received reading: Temperature=36.8°C, Humidity=20.0%
+2025-05-04 17:39:00,634 - INFO - 152.56.1.116 - - [04/May/2025 17:39:00] "[35m[1mPOST /api/data HTTP/1.1[0m" 201 -
+2025-05-04 17:39:09,820 - INFO - 116.75.182.185 - - [04/May/2025 17:39:09] "GET /dashboard HTTP/1.1" 200 -
+2025-05-04 17:39:26,616 - INFO - 116.75.182.185 - - [04/May/2025 17:39:26] "GET /dashboard HTTP/1.1" 200 -
+2025-05-04 17:39:36,402 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.128.0.2:5000
+2025-05-04 17:39:36,402 - INFO - [33mPress CTRL+C to quit[0m
+2025-05-04 17:40:04,281 - INFO - Received reading: Temperature=36.8°C, Humidity=20.0%
+2025-05-04 17:40:04,282 - INFO - 152.56.1.116 - - [04/May/2025 17:40:04] "[35m[1mPOST /api/data HTTP/1.1[0m" 201 -
+2025-05-04 17:41:09,860 - INFO - Received reading: Temperature=36.8°C, Humidity=20.0%
+2025-05-04 17:41:09,861 - INFO - 152.56.1.116 - - [04/May/2025 17:41:09] "[35m[1mPOST /api/data HTTP/1.1[0m" 201 -
+2025-05-04 17:42:13,813 - INFO - Received reading: Temperature=36.8°C, Humidity=20.0%
+2025-05-04 17:42:13,814 - INFO - 152.56.1.116 - - [04/May/2025 17:42:13] "[35m[1mPOST /api/data HTTP/1.1[0m" 201 -
+2025-05-04 17:42:32,482 - INFO - 116.75.182.185 - - [04/May/2025 17:42:32] "GET /dashboard HTTP/1.1" 200 -
+2025-05-05 10:41:35,477 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.18.0.3:5000
+2025-05-05 10:41:35,477 - INFO - [33mPress CTRL+C to quit[0m
+2025-05-05 10:42:19,000 - INFO - 49.36.42.179 - - [05/May/2025 10:42:19] "GET / HTTP/1.1" 200 -
+2025-05-05 10:42:19,355 - INFO - 49.36.42.179 - - [05/May/2025 10:42:19] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -

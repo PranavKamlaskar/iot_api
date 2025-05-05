@@ -1,0 +1,2 @@
+*/5 * * * * root python /app/alert_checker.py >> /var/log/cron.log 2>&1
+

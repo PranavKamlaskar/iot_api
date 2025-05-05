@@ -1,0 +1,38 @@
+Step 3: ESP8266 Arduino Sketch (DHT11 + Wi-Fi + HTTP POST)
+✅ Requirements
+ESP8266 board (e.g., NodeMCU)
+
+DHT11 sensor (connected to a digital pin)
+
+Arduino IDE with:
+
+ESP8266 Board Manager installed
+
+Libraries:
+
+DHT sensor library
+
+Adafruit Unified Sensor
+
+ESP8266WiFi
+
+ArduinoJson (for JSON formatting)
+arduino file 
+											<!-- checkout the lvl2_temp_monitor in arduino-->
+
+added
+@app.route("/api/latest", methods=["GET"])
+def latest_reading():
+    session = Session()
+    reading = session.query(SensorReading).order_by(SensorReading.timestamp.desc()).first()
+    session.close()
+
+    if not reading:
+        return jsonify({"error": "No data available"}), 404
+
+    return jsonify({
+        "temperature": reading.temperature,
+        "humidity": reading.humidity,
+        "timestamp": reading.timestamp
+    }), 200
+

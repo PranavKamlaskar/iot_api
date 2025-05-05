@@ -1,0 +1,33 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://iotuser:iotpassword@db:5432/iotdb  # Use 'db' as the host
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: iotdb
+      POSTGRES_USER: iotuser
+      POSTGRES_PASSWORD: iotpassword
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  alerts:
+    build: ./alert_service  # ✅  Must point to directory containing Dockerfile
+    depends_on:
+      - web
+      - db
+    env_file: .env
+    restart: always
+
+volumes:
+  pgdata:
+

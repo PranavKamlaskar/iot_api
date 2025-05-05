@@ -1,0 +1,50 @@
+2025-05-05 17:44:01,729 - INFO - Latest Reading: Temp=36.8°C, Humidity=20.0%, Time=2025-05-04 17:42:13.809890
+2025-05-05 17:44:01,729 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:45:02,386 - INFO - Latest Reading: Temp=36.8°C, Humidity=20.0%, Time=2025-05-04 17:42:13.809890
+2025-05-05 17:45:02,387 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:45:41,976 - INFO - Latest Reading: Temp=36.8°C, Humidity=20.0%, Time=2025-05-04 17:42:13.809890
+2025-05-05 17:45:41,977 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:46:02,023 - INFO - Latest Reading: Temp=36.8°C, Humidity=20.0%, Time=2025-05-04 17:42:13.809890
+2025-05-05 17:46:02,024 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:47:01,659 - INFO - Latest Reading: Temp=36.8°C, Humidity=20.0%, Time=2025-05-04 17:42:13.809890
+2025-05-05 17:47:01,659 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:48:02,304 - INFO - Latest Reading: Temp=36.8°C, Humidity=20.0%, Time=2025-05-04 17:42:13.809890
+2025-05-05 17:48:02,304 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:49:01,962 - INFO - Latest Reading: Temp=36.8°C, Humidity=20.0%, Time=2025-05-04 17:42:13.809890
+2025-05-05 17:49:01,962 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:50:01,636 - INFO - Latest Reading: Temp=36.8°C, Humidity=20.0%, Time=2025-05-04 17:42:13.809890
+2025-05-05 17:50:01,636 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:50:11,620 - INFO - Latest Reading: Temp=36.8°C, Humidity=20.0%, Time=2025-05-04 17:42:13.809890
+2025-05-05 17:50:11,620 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:51:02,318 - INFO - Latest Reading: Temp=36.8°C, Humidity=20.0%, Time=2025-05-04 17:42:13.809890
+2025-05-05 17:51:02,319 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:52:01,985 - INFO - Latest Reading: Temp=36.8°C, Humidity=20.0%, Time=2025-05-04 17:42:13.809890
+2025-05-05 17:52:01,986 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:52:56,509 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:52:56.454704
+2025-05-05 17:52:56,510 - WARNING - ALERT: Threshold breached! Temp=45.0, Humidity=15.0
+2025-05-05 17:53:01,657 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:53:01.647586
+2025-05-05 17:53:01,657 - WARNING - ALERT: Threshold breached! Temp=45.0, Humidity=15.0
+2025-05-05 17:54:01,843 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:54:01.834333
+2025-05-05 17:54:01,844 - WARNING - ALERT: Threshold breached! Temp=45.0, Humidity=15.0
+2025-05-05 17:55:02,051 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:54:01.834333
+2025-05-05 17:55:02,052 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:56:01,715 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:54:01.834333
+2025-05-05 17:56:01,716 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:57:02,356 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:54:01.834333
+2025-05-05 17:57:02,356 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:58:01,995 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:54:01.834333
+2025-05-05 17:58:01,995 - WARNING - Skipping: No new data since last alert.
+2025-05-05 17:59:01,625 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:54:01.834333
+2025-05-05 17:59:01,626 - WARNING - Skipping: No new data since last alert.
+2025-05-05 18:00:02,250 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:54:01.834333
+2025-05-05 18:00:02,250 - WARNING - Skipping: No new data since last alert.
+2025-05-05 18:01:01,911 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:54:01.834333
+2025-05-05 18:01:01,912 - WARNING - Skipping: No new data since last alert.
+2025-05-05 18:02:01,529 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:54:01.834333
+2025-05-05 18:02:01,529 - WARNING - Skipping: No new data since last alert.
+2025-05-05 18:03:02,167 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:54:01.834333
+2025-05-05 18:03:02,167 - WARNING - Skipping: No new data since last alert.
+2025-05-05 18:04:01,828 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:54:01.834333
+2025-05-05 18:04:01,828 - WARNING - Skipping: No new data since last alert.
+2025-05-05 18:05:02,481 - INFO - Latest Reading: Temp=45.0°C, Humidity=15.0%, Time=2025-05-05 17:54:01.834333
+2025-05-05 18:05:02,482 - WARNING - Skipping: No new data since last alert.

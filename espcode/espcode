@@ -1,0 +1,76 @@
+#include <ESP8266WiFi.h>
+#include <DHT.h>
+#include <ArduinoJson.h>
+#include <ESP8266HTTPClient.h>
+
+#define DHTPIN D2        // GPIO pin where the DHT11 is connected
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
+
+// Replace with your Wi-Fi and API info
+const char* ssid = "hotspot";
+const char* password = "qwertyuiop";
+
+const char* apiHost = "http://34.66.149.71:5000/api/data";  // Change to EC2 public IP
+const char* apiKey = "apikey";
+
+WiFiClient client;  // Declare WiFiClient object
+
+void setup() {
+  Serial.begin(115200);
+  dht.begin();
+  WiFi.begin(ssid, password);
+
+  Serial.print("Connecting to Wi-Fi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nConnected to Wi-Fi");
+}
+
+void loop() {
+  float temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
+
+  if (isnan(temperature) || isnan(humidity)) {
+    Serial.println("Failed to read from DHT sensor!");
+    delay(60000);
+    return;
+  }
+
+  Serial.printf("Temp: %.2f C, Hum: %.2f %%\n", temperature, humidity);
+
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    
+    // Updated begin() call with WiFiClient
+    http.begin(client, apiHost);
+    http.addHeader("Content-Type", "application/json");
+    http.addHeader("X-API-KEY", apiKey);
+
+    // JSON payload
+    StaticJsonDocument<200> doc;
+    doc["temperature"] = temperature;
+    doc["humidity"] = humidity;
+
+    String payload;
+    serializeJson(doc, payload);
+
+    int httpCode = http.POST(payload);
+
+    Serial.printf("POST code: %d\n", httpCode);
+    if (httpCode > 0) {
+      String response = http.getString();
+      Serial.println("Response: " + response);
+    }
+
+    http.end();
+  } else {
+    Serial.println("Wi-Fi not connected!");
+  }
+
+  delay(60000); // Send every 60 seconds
+}

@@ -1,0 +1,73 @@
+📌 Step-by-Step Summary
+🔹 Step 1: Created Read API Endpoint /api/readings
+Added a new GET endpoint: /api/readings
+
+Supports optional filters:
+
+?limit=10 → latest 10 readings
+
+?start=...&end=... → filter by date/time
+
+Returns structured JSON
+
+✅ Example:
+
+bash
+Copy
+Edit
+curl -H "X-READ-KEY: readonly123" http://<your-ip>:5000/api/readings?limit=5
+🔹 Step 2: Enhanced /api/latest
+Cleaned up and reused DB session logic
+
+Returns the latest sensor reading in JSON
+
+json
+Copy
+Edit
+{
+  "temperature": 28.3,
+  "humidity": 42.1,
+  "timestamp": "2025-05-04T17:23:01.773924"
+}
+🔹 Step 3: Verified API from Local + External
+Tested endpoints from both internal shell and external IP (curl)
+
+Verified correct behavior under:
+
+Good key
+
+Missing key
+
+Invalid key
+
+🔹 Step 4: Added File Logging
+Every incoming reading is now also logged to a file (readings.log)
+
+Format: 2025-05-04T17:31:01Z - Temp: 28.3 C, Humidity: 42.1 %
+
+✅ Debug & tail logs:
+
+bash
+Copy
+Edit
+tail -f readings.log
+🔹 Step 5: Secured Read APIs with READ_API_KEY
+Updated .env:
+
+env
+Copy
+Edit
+READ_API_KEY=readonly123
+/api/latest and /api/readings now require:
+
+http
+Copy
+Edit
+X-READ-KEY: readonly123
+Prevents public scraping and enforces read/write key separation
+
+🔐 API Access Summary
+Endpoint	Method	Protected By	Purpose
+/api/data	POST	X-API-KEY	Sensor pushes data
+/api/latest	GET	X-READ-KEY	Get latest reading
+/api/readings	GET	X-READ-KEY	Get historical data w/ filters

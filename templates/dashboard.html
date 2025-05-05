@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sensor Dashboard</title>
+    <style>
+	body { font-family: Arial, sans-serif; padding: 2em; }
+	table { border-collapse: collapse; width: 100%; }
+	th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+	th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h1>Sensor Readings (Latest {{ readings|length }})</h1>
+    <table>
+	<tr>
+	    <th>Timestamp (UTC)</th>
+	    <th>Temperature (°C)</th>
+	    <th>Humidity (%)</th>
+	</tr>
+	{% for r in readings %}
+	<tr>
+	    <td>{{ r.timestamp }}</td>
+	    <td>{{ r.temperature }}</td>
+	    <td>{{ r.humidity }}</td>
+	</tr>
+	{% endfor %}
+    </table>
+</body>
+</html>

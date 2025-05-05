@@ -1,0 +1,32 @@
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+sudo -u postgres psql
+CREATE DATABASE iot_data;
+CREATE USER iot_user WITH PASSWORD 'securepassword';
+GRANT ALL PRIVILEGES ON DATABASE iot_data TO iot_user;
+\c iot_data
+GRANT ALL PRIVILEGES ON SCHEMA public TO iot_user;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO iot_user;
+ALTER SCHEMA public OWNER TO iot_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO iot_user;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO iot_user;
+\q
+
+mkdir iot-api
+cd iot-api/
+vim .env								<!--check file-->
+vim models.py 								<!--check file-->
+vim db_init.py								<!--check file-->
+sudo apt install python3-pip python3-dev -y
+sudo apt install python3-venv -y
+python3 -m venv venv
+source venv/bin/activate
+pip install sqlalchemy
+pip install dotenv
+pip install psycopg2-binary
+sudo apt-get update
+python db_init.py
+ 
+

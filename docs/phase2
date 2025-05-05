@@ -1,0 +1,325 @@
+Goal:
+Expose a GET endpoint /api/readings that:
+
+Returns all sensor data
+
+Accepts optional query parameter range:
+
+range=24h → Readings from last 24 hours
+
+range=7d → Readings from last 7 days
+
+If no range → Return all readings
+
+🧩 Code to Add in app.py:
+Append this new route:
+
+python
+Copy
+Edit
+from flask import Response
+import csv
+from io import StringIO
+
+@app.route("/api/readings", methods=["GET"])
+def get_readings():
+    session = Session()
+
+    # Optional filter by time range
+    range_param = request.args.get("range")
+    query = session.query(SensorReading)
+
+    if range_param:
+        now = datetime.utcnow()
+        if range_param == "24h":
+            since = now - timedelta(hours=24)
+        elif range_param == "7d":
+            since = now - timedelta(days=7)
+        else:
+            return jsonify({"error": "Invalid range. Use '24h' or '7d'."}), 400
+        query = query.filter(SensorReading.timestamp >= since)
+
+    readings = query.order_by(SensorReading.timestamp.desc()).all()
+    session.close()
+
+    # Return JSON list
+    data = [
+        {
+            "temperature": r.temperature,
+            "humidity": r.humidity,
+            "timestamp": r.timestamp.isoformat()
+        } for r in readings
+    ]
+
+    return jsonify(data), 200
+
+STEP2
+Great — let's begin Step 2: Add export to CSV functionality.
+
+✅ Goal
+Create a new Flask API endpoint:
+
+http
+Copy
+Edit
+GET /api/readings.csv
+This will return all readings (or filtered ones like last 24h) as a downloadable CSV file.
+
+🧱 Steps to Implement
+Add a new route to app.py:
+
+python
+Copy
+Edit
+from flask import Response
+import csv
+import io
+Create the route handler:
+
+python
+Copy
+Edit
+@app.route("/api/readings.csv", methods=["GET"])
+def export_csv():
+    session = Session()
+
+    # Optional time filter
+    time_range = request.args.get("range")  # e.g., 24h or 7d
+    query = session.query(SensorReading)
+
+    if time_range == "24h":
+        since = datetime.utcnow() - timedelta(days=1)
+        query = query.filter(SensorReading.timestamp >= since)
+    elif time_range == "7d":
+        since = datetime.utcnow() - timedelta(days=7)
+        query = query.filter(SensorReading.timestamp >= since)
+
+    readings = query.order_by(SensorReading.timestamp.desc()).all()
+    session.close()
+
+    # Write to CSV using StringIO
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["timestamp", "temperature", "humidity"])  # header
+
+    for r in readings:
+        writer.writerow([r.timestamp.isoformat(), r.temperature, r.humidity])
+
+    response = Response(output.getvalue(), mimetype="text/csv")
+    response.headers["Content-Disposition"] = "attachment; filename=readings.csv"
+    return response
+Test it:
+
+bash
+Copy
+Edit
+curl -o readings.csv http://34.66.149.71:5000/api/readings.csv
+Or filter:
+
+bash
+Copy
+Edit
+curl -o readings_24h.csv "http://34.66.149.71:5000/api/readings.csv?range=24h"
+
+STEP3
+Let's begin Step 3: Minimal frontend HTML view to display the latest sensor readings in a simple webpage.
+
+✅ Goal
+Create a basic HTML page served at /dashboard that shows the latest readings (or a table of recent data) using server-side rendering with Flask.
+No React, no JS frameworks, just Jinja2 templates.
+
+🧱 Steps to Implement
+1. Create a templates/ folder
+In your project root, make a new directory:
+
+bash
+Copy
+Edit
+mkdir templates
+2. Create a template file templates/dashboard.html
+html
+Copy
+Edit
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sensor Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 2em; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h1>Sensor Readings (Latest {{ readings|length }})</h1>
+    <table>
+        <tr>
+            <th>Timestamp (UTC)</th>
+            <th>Temperature (°C)</th>
+            <th>Humidity (%)</th>
+        </tr>
+        {% for r in readings %}
+        <tr>
+            <td>{{ r.timestamp }}</td>
+            <td>{{ r.temperature }}</td>
+            <td>{{ r.humidity }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+3. Update app.py to serve this page
+At the top:
+
+python
+Copy
+Edit
+from flask import render_template
+Then add this route:
+
+python
+Copy
+Edit
+@app.route("/dashboard", methods=["GET"])
+def dashboard():
+    session = Session()
+    readings = session.query(SensorReading).order_by(SensorReading.timestamp.desc()).limit(20).all()
+    session.close()
+    return render_template("dashboard.html", readings=readings)
+4. Test the view
+Restart your Flask app, then visit:
+
+arduino
+Copy
+Edit
+http://<your-ec2-ip>:5000/dashboard
+
+STEP4
+Step 4: Add Basic Logging to log each sensor reading into a readings.log file.
+
+✅ Changes in app.py: Add Logging
+At the top of your app.py, import and configure logging:
+
+python
+Copy
+Edit
+import logging
+
+# Logging setup
+logging.basicConfig(
+    filename="readings.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+In the /api/data route, log each reading after saving:
+
+python
+Copy
+Edit
+logging.info(f"Received reading: Temperature={temp}°C, Humidity={hum}%")
+🔁 Full snippet inside receive_data():
+python
+Copy
+Edit
+@app.route("/api/data", methods=["POST"])
+def receive_data():
+    if request.headers.get("X-API-KEY") != API_KEY:
+        return jsonify({"error": "unauthorized access"}), 401
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "invalid JSON"}), 400
+
+    try:
+        temp = float(data["temperature"])
+        hum = float(data["humidity"])
+    except (KeyError, ValueError):
+        return jsonify({"error": "Invalid Payload"}), 400
+
+    session = Session()
+    reading = SensorReading(temperature=temp, humidity=hum)
+    session.add(reading)
+    session.commit()
+    session.close()
+
+    logging.info(f"Received reading: Temperature={temp}°C, Humidity={hum}%")
+
+    return jsonify({"message": "Data received"}), 201
+🧪 To view logs in real-time:
+bash
+Copy
+Edit
+tail -f readings.log
+Let me know if you want to add error logs or log to a cloud platform next.
+
+STEP5
+Step 5: Keep Security Consistent in your upgraded Phase 2 plan:
+
+🔐 /api/data – PROTECTED
+✅ Already protected via X-API-KEY header using API_KEY from .env.
+
+✅ Rejects requests without the correct key.
+
+python
+Copy
+Edit
+if request.headers.get("X-API-KEY") != API_KEY:
+    return jsonify({"error": "unauthorized access"}), 401
+📖 /api/latest – PUBLIC
+❗ Currently not protected, accessible without a key.
+
+📖 /api/readings – PUBLIC
+❗ Also not protected, if implemented based on our recent steps.
+
+ Step-by-Step to Add READ_API_KEY Protection:
+1. Update your .env file:
+Add a new key:
+
+env
+Copy
+Edit
+READ_API_KEY=readonly123
+2. Update app.py:
+At the top (after loading .env):
+
+python
+Copy
+Edit
+READ_API_KEY = os.getenv("READ_API_KEY")
+Then, update your read endpoints with a new check:
+
+🔒 /api/latest
+python
+Copy
+Edit
+@app.route("/api/latest", methods=["GET"])
+def latest_reading():
+    if request.headers.get("X-READ-KEY") != READ_API_KEY:
+        return jsonify({"error": "unauthorized access"}), 401
+
+    session = Session()
+    reading = session.query(SensorReading).order_by(SensorReading.timestamp.desc()).first()
+    session.close()
+
+    if not reading:
+        return jsonify({"error": "no data available"}), 404
+
+    return jsonify({
+        "temperature": reading.temperature,
+        "humidity": reading.humidity,
+        "timestamp": reading.timestamp.isoformat()
+    }), 200
+🔒 /api/readings
+Wrap the same protection around this route:
+
+python
+Copy
+Edit
+@app.route("/api/readings", methods=["GET"])
+def get_readings():
+    if request.headers.get("X-READ-KEY") != READ_API_KEY:
+        return jsonify({"error": "unauthorized access"}), 401
+
+    # existing filter and DB logic here

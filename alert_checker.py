@@ -1,0 +1,115 @@
+import os
+import json
+from pathlib import Path
+from datetime import datetime
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import SensorReading, Base
+import requests
+import smtplib
+from email.mime.text import MIMEText
+
+# Load .env variables
+load_dotenv()
+DB_URL = os.getenv("DB_URL")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
+
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+EMAIL_TO = os.getenv("EMAIL_TO")
+
+# Thresholds
+TEMP_THRESHOLD = 30.0
+HUM_THRESHOLD = 25.0
+
+# Alert state file
+ALERT_STATE_FILE = ".last_alert"
+
+# DB setup
+engine = create_engine(DB_URL)
+Session = sessionmaker(bind=engine)
+
+# --- Alert helpers ---
+
+def get_last_alert_time():
+    if not Path(ALERT_STATE_FILE).exists():
+        return None
+    with open(ALERT_STATE_FILE, "r") as f:
+        data = json.load(f)
+        return datetime.fromisoformat(data.get("timestamp"))
+
+def set_last_alert_time(timestamp):
+    with open(ALERT_STATE_FILE, "w") as f:
+        json.dump({"timestamp": timestamp.isoformat()}, f)
+
+def send_telegram_alert(message):
+    if not BOT_TOKEN or not CHAT_ID:
+        print("⚠️ Telegram credentials missing.")
+        return
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    payload = {"chat_id": CHAT_ID, "text": message}
+    try:
+        response = requests.post(url, json=payload)
+        if response.status_code == 200:
+            print("✅ Telegram alert sent.")
+        else:
+            print(f"❌ Telegram error: {response.text}")
+    except Exception as e:
+        print(f"❌ Telegram send failed: {e}")
+
+def send_email_alert(subject, body):
+    if not all([EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, EMAIL_TO]):
+        print("⚠️ Email credentials missing.")
+        return
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = EMAIL_USER
+    msg["To"] = EMAIL_TO
+    try:
+        with smtplib.SMTP(EMAIL_HOST, EMAIL_PORT) as server:
+            server.starttls()
+            server.login(EMAIL_USER, EMAIL_PASSWORD)
+            server.send_message(msg)
+        print("✅ Email alert sent.")
+    except Exception as e:
+        print(f"❌ Email send failed: {e}")
+
+# --- Main logic ---
+
+def check_alert_conditions():
+    session = Session()
+    reading = session.query(SensorReading).order_by(SensorReading.timestamp.desc()).first()
+    session.close()
+
+    if not reading:
+        print("⚠️ No sensor data available.")
+        return
+
+    print(f"Latest Reading: Temp={reading.temperature}°C, Humidity={reading.humidity}%, Time={reading.timestamp}")
+
+    last_alert_time = get_last_alert_time()
+    if last_alert_time and reading.timestamp <= last_alert_time:
+        print("🔁 Skipping: No new data since last alert.")
+        return
+
+    if reading.temperature > TEMP_THRESHOLD or reading.humidity < HUM_THRESHOLD:
+        print("🚨 ALERT: Threshold breached!")
+        alert_msg = (
+            f"🚨 Alert!\n"
+            f"Temp: {reading.temperature}°C\n"
+            f"Humidity: {reading.humidity}%\n"
+            f"Time: {reading.timestamp}"
+        )
+        send_telegram_alert(alert_msg)
+        send_email_alert("🚨 IoT Alert Triggered", alert_msg)
+        set_last_alert_time(reading.timestamp)
+    else:
+        print("✅ Normal conditions.")
+
+if __name__ == "__main__":
+    check_alert_conditions()
+

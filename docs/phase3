@@ -1,0 +1,576 @@
+Phase 3, Step 1: Creating alert_checker.py.
+
+This script will:
+
+Connect to your existing PostgreSQL via SQLAlchemy
+
+Fetch the most recent reading
+
+Evaluate whether it crosses alert thresholds (e.g., temp > 30, humidity < 25)
+
+(We’ll add alerting actions in later steps)
+
+✅ Step 1: alert_checker.py (Initial Version)
+Create a new file called alert_checker.py in the same project directory and paste this:
+
+python
+Copy
+Edit
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import SensorReading, Base
+from dotenv import load_dotenv
+import os
+from datetime import datetime
+
+# Load environment variables
+load_dotenv()
+DB_URL = os.getenv("DB_URL")
+
+# Alert thresholds
+TEMP_THRESHOLD = 30.0
+HUM_THRESHOLD = 25.0
+
+# DB setup
+engine = create_engine(DB_URL)
+Session = sessionmaker(bind=engine)
+
+def check_alert_conditions():
+    session = Session()
+    reading = session.query(SensorReading).order_by(SensorReading.timestamp.desc()).first()
+    session.close()
+
+    if not reading:
+        print("⚠️ No sensor data available.")
+        return
+
+    print(f"Latest Reading: Temp={reading.temperature}°C, Humidity={reading.humidity}%")
+
+    if reading.temperature > TEMP_THRESHOLD or reading.humidity < HUM_THRESHOLD:
+        print("🚨 ALERT: Threshold breached!")
+    else:
+        print("✅ Normal conditions.")
+
+if __name__ == "__main__":
+    check_alert_conditions()
+✅ What this does:
+Loads DB credentials
+
+Fetches latest sensor reading
+
+Prints whether the reading is normal or alarming
+
+✅ Run It:
+bash
+Copy
+Edit
+python alert_checker.py
+You should see a printout of the latest reading and whether it’s normal or not.
+
+
+
+
+Step 2: Add deduplication logic to prevent repeated alerts for the same issue.
+
+✅ Goal:
+Avoid sending alerts repeatedly for the same condition (e.g., temperature > 30°C every minute).
+
+✅ Strategy:
+Store the timestamp of the last alert in a file (e.g., .last_alert)
+
+Compare it with the timestamp of the latest reading
+
+Only send alert if it's a new breach, i.e., timestamp is more recent than last alert
+
+✏️ Update alert_checker.py:
+Add this logic inside your existing script:
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import SensorReading, Base
+from dotenv import load_dotenv
+import os
+import json
+from pathlib import Path
+from datetime import datetime
+
+# Load environment variables
+load_dotenv()
+DB_URL = os.getenv("DB_URL")
+
+# Alert thresholds
+TEMP_THRESHOLD = 30.0
+HUM_THRESHOLD = 25.0
+
+# File to track last alert timestamp
+ALERT_STATE_FILE = ".last_alert"
+
+# DB setup
+engine = create_engine(DB_URL)
+Session = sessionmaker(bind=engine)
+
+def get_last_alert_time():
+    if not Path(ALERT_STATE_FILE).exists():
+        return None
+    with open(ALERT_STATE_FILE, "r") as f:
+        data = json.load(f)
+        return datetime.fromisoformat(data.get("timestamp"))
+
+def set_last_alert_time(timestamp):
+    with open(ALERT_STATE_FILE, "w") as f:
+        json.dump({"timestamp": timestamp.isoformat()}, f)
+
+def check_alert_conditions():
+    session = Session()
+    reading = session.query(SensorReading).order_by(SensorReading.timestamp.desc()).first()
+    session.close()
+
+    if not reading:
+        print("⚠️ No sensor data available.")
+        return
+
+    print(f"Latest Reading: Temp={reading.temperature}°C, Humidity={reading.humidity}%, Timestamp={reading.timestamp}")
+
+    last_alert_time = get_last_alert_time()
+    if last_alert_time and reading.timestamp <= last_alert_time:
+        print("🔁 Skipping: No new data since last alert.")
+        return
+
+    if reading.temperature > TEMP_THRESHOLD or reading.humidity < HUM_THRESHOLD:
+        print("🚨 ALERT: Threshold breached!")
+        set_last_alert_time(reading.timestamp)
+    else:
+        print("✅ Normal conditions.")
+
+if __name__ == "__main__":
+    check_alert_conditions()
+✅ This script now:
+
+Connects to the database
+
+Checks latest reading
+
+Compares with thresholds
+
+Prevents repeated alerts using .last_alert
+
+
+
+
+
+
+
+
+Phase 3, Step 3: Telegram Alert Integration ✅
+This will notify you on Telegram when threshold breaches occur.
+
+🔧 Prerequisites
+Create a Telegram bot via @BotFather:
+
+Use /newbot
+
+Copy the bot token (e.g., 123456:ABC-DEF...)
+
+Get your Telegram user/chat ID:
+
+Start a chat with your bot
+
+Visit: https://api.telegram.org/bot<your_token>/getUpdates
+
+Your chat ID will appear in the JSON (e.g., "chat":{"id":123456789,...})
+
+Update your .env file:
+
+env
+Copy
+Edit
+TELEGRAM_BOT_TOKEN=123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
+TELEGRAM_CHAT_ID=123456789
+🧠 Step-by-Step Code Additions
+1. Load Telegram info in the script
+At the top of your script:
+
+python
+Copy
+Edit
+import requests
+
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+2. Add a function to send Telegram messages
+Place this in your script:
+
+python
+Copy
+Edit
+def send_telegram_alert(message):
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        print("⚠️ Telegram config missing.")
+        return
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": message
+    }
+    try:
+        r = requests.post(url, json=payload)
+        if r.status_code == 200:
+            print("✅ Telegram alert sent.")
+        else:
+            print("❌ Failed to send Telegram alert:", r.text)
+    except Exception as e:
+        print("❌ Error:", e)
+3. Modify your alert trigger:
+In check_alert_conditions(), after "🚨 ALERT":
+
+python
+Copy
+Edit
+send_telegram_alert(
+    f"🚨 Alert!\nTemp: {reading.temperature}°C\nHumidity: {reading.humidity}%\nTime: {reading.timestamp}"
+)
+Would you like me to show the full updated script with Telegram alert support now?
+
+
+
+
+
+
+
+You said:
+3. Modify your alert trigger:
+In check_alert_conditions(), after "🚨 ALERT": where exactly
+
+
+
+2/2
+
+ChatGPT said:
+Great question — let me show you exactly where to insert the Telegram alert call.
+
+Assuming you’re using the deduplicated version of check_alert_conditions(), here’s the modified portion with the send_telegram_alert() function call inserted right after the alert is triggered.
+
+✅ Modified check_alert_conditions() (only the relevant part):
+python
+Copy
+Edit
+    if reading.temperature > TEMP_THRESHOLD or reading.humidity < HUM_THRESHOLD:
+        print("🚨 ALERT: Threshold breached!")
+        
+        # ✅ Send Telegram alert
+        send_telegram_alert(
+            f"🚨 Alert!\nTemp: {reading.temperature}°C\nHumidity: {reading.humidity}%\nTime: {reading.timestamp}"
+        )
+
+        # ✅ Update last alert timestamp
+        set_last_alert_time(reading.timestamp)
+✅ Place it immediately after the print("🚨 ALERT...") and before set_last_alert_time().
+
+Would you like the full script now with Telegram support fully included?
+
+
+
+
+
+
+
+You said:
+Would you like the full script now with Telegram support fully included?ok
+
+
+ChatGPT said:
+Here’s the full updated script for your Phase 3 alert system with:
+
+Threshold-based alert logic
+
+Deduplication (to avoid repeat alerts)
+
+Telegram integration
+
+
+
+
+
+
+
+Step 4: Email Alerts via SMTP.
+
+✅ Step-by-Step Plan to Add Email Alerting
+📦 1. Install Required Package
+Flask doesn't include email sending by default, so install smtplib dependencies:
+
+For most use cases, Python’s built-in smtplib is enough — no need to install anything!
+
+🔐 2. Update .env File with Email Credentials
+env
+Copy
+Edit
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASSWORD=your_app_password
+EMAIL_TO=recipient@example.com
+✅ If you're using Gmail, enable "App Passwords" from Google Account → Security → App Passwords.
+
+✉️ 3. Add Email Sending Function
+Inside your alert script (alert_checker.py), add:
+
+python
+Copy
+Edit
+import smtplib
+from email.mime.text import MIMEText
+
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT"))
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+EMAIL_TO = os.getenv("EMAIL_TO")
+
+def send_email_alert(subject, body):
+    if not all([EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, EMAIL_TO]):
+        print("⚠️ Email credentials missing.")
+        return
+
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = EMAIL_USER
+    msg["To"] = EMAIL_TO
+
+    try:
+        with smtplib.SMTP(EMAIL_HOST, EMAIL_PORT) as server:
+            server.starttls()
+            server.login(EMAIL_USER, EMAIL_PASSWORD)
+            server.send_message(msg)
+        print("✅ Email alert sent.")
+    except Exception as e:
+        print(f"❌ Failed to send email alert: {e}")
+📌 4. Modify Your Alert Trigger
+Now, update the check_alert_conditions() function to call both Telegram and Email:
+
+python
+Copy
+Edit
+if reading.temperature > TEMP_THRESHOLD or reading.humidity < HUM_THRESHOLD:
+    print("🚨 ALERT: Threshold breached!")
+    alert_msg = (
+        f"🚨 Alert!\nTemp: {reading.temperature}°C\nHumidity: {reading.humidity}%\nTime: {reading.timestamp}"
+    )
+    send_telegram_alert(alert_msg)
+    send_email_alert("🚨 IoT Alert Triggered", alert_msg)
+    set_last_alert_time(reading.timestamp)
+✅ You're now sending alerts via both Telegram and Email when thresholds are breached.
+
+Would you like me to generate the full updated alert_checker.py script with this included?
+
+
+
+
+
+
+
+You said:
+Would you like me to generate the full updated alert_checker.py script with this included? yes
+
+
+
+
+
+
+
+
+
+ChatGPT said:
+Here's the full updated alert_checker.py script with:
+
+✅ PostgreSQL reading
+
+✅ Deduplication logic
+
+✅ Telegram alerts
+
+✅ Email alerts via SMTP
+
+Make sure your .env file contains the correct variables as noted earlier.
+
+python
+Copy
+Edit
+import os
+import json
+from pathlib import Path
+from datetime import datetime
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import SensorReading, Base
+import requests
+import smtplib
+from email.mime.text import MIMEText
+
+# Load .env variables
+load_dotenv()
+DB_URL = os.getenv("DB_URL")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
+
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+EMAIL_TO = os.getenv("EMAIL_TO")
+
+# Thresholds
+TEMP_THRESHOLD = 30.0
+HUM_THRESHOLD = 25.0
+
+# Alert state file
+ALERT_STATE_FILE = ".last_alert"
+
+# DB setup
+engine = create_engine(DB_URL)
+Session = sessionmaker(bind=engine)
+
+# --- Alert helpers ---
+
+def get_last_alert_time():
+    if not Path(ALERT_STATE_FILE).exists():
+        return None
+    with open(ALERT_STATE_FILE, "r") as f:
+        data = json.load(f)
+        return datetime.fromisoformat(data.get("timestamp"))
+
+def set_last_alert_time(timestamp):
+    with open(ALERT_STATE_FILE, "w") as f:
+        json.dump({"timestamp": timestamp.isoformat()}, f)
+
+def send_telegram_alert(message):
+    if not BOT_TOKEN or not CHAT_ID:
+        print("⚠️ Telegram credentials missing.")
+        return
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    payload = {"chat_id": CHAT_ID, "text": message}
+    try:
+        response = requests.post(url, json=payload)
+        if response.status_code == 200:
+            print("✅ Telegram alert sent.")
+        else:
+            print(f"❌ Telegram error: {response.text}")
+    except Exception as e:
+        print(f"❌ Telegram send failed: {e}")
+
+def send_email_alert(subject, body):
+    if not all([EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, EMAIL_TO]):
+        print("⚠️ Email credentials missing.")
+        return
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = EMAIL_USER
+    msg["To"] = EMAIL_TO
+    try:
+        with smtplib.SMTP(EMAIL_HOST, EMAIL_PORT) as server:
+            server.starttls()
+            server.login(EMAIL_USER, EMAIL_PASSWORD)
+            server.send_message(msg)
+        print("✅ Email alert sent.")
+    except Exception as e:
+        print(f"❌ Email send failed: {e}")
+
+# --- Main logic ---
+
+def check_alert_conditions():
+    session = Session()
+    reading = session.query(SensorReading).order_by(SensorReading.timestamp.desc()).first()
+    session.close()
+
+    if not reading:
+        print("⚠️ No sensor data available.")
+        return
+
+    print(f"Latest Reading: Temp={reading.temperature}°C, Humidity={reading.humidity}%, Time={reading.timestamp}")
+
+    last_alert_time = get_last_alert_time()
+    if last_alert_time and reading.timestamp <= last_alert_time:
+        print("🔁 Skipping: No new data since last alert.")
+        return
+
+    if reading.temperature > TEMP_THRESHOLD or reading.humidity < HUM_THRESHOLD:
+        print("🚨 ALERT: Threshold breached!")
+        alert_msg = (
+            f"🚨 Alert!\n"
+            f"Temp: {reading.temperature}°C\n"
+            f"Humidity: {reading.humidity}%\n"
+            f"Time: {reading.timestamp}"
+        )
+        send_telegram_alert(alert_msg)
+        send_email_alert("🚨 IoT Alert Triggered", alert_msg)
+        set_last_alert_time(reading.timestamp)
+    else:
+        print("✅ Normal conditions.")
+
+if __name__ == "__main__":
+    check_alert_conditions()
+✅ This script is production-ready for scheduled background use.
+
+
+
+
+
+
+
+
+
+
+
+To set up your alert_checker.py script to run automatically using cron (on Linux/Unix-based systems), follow these steps:
+
+Step 1: Open the cron configuration
+In your terminal, type:
+
+bash
+Copy
+Edit
+crontab -e
+This will open the cron configuration file for your user in the default editor.
+
+Step 2: Add the cron job to run your script periodically
+To run the alert_checker.py script every X minutes (for example, every 5 minutes), add the following line to your crontab file:
+
+bash
+Copy
+Edit
+*/5 * * * * /path/to/venv/bin/python /path/to/your/script/alert_checker.py >> /path/to/your/logs/alert_checker.log 2>&1
+Explanation:
+
+*/5 * * * *: This runs the script every 5 minutes. You can change the 5 to any other number (e.g., */10 for every 10 minutes, */30 for every 30 minutes, etc.).
+
+/path/to/venv/bin/python: The Python executable from your virtual environment (make sure to replace /path/to/venv with the actual path to your virtual environment).
+
+/path/to/your/script/alert_checker.py: The full path to your alert_checker.py script.
+
+>> /path/to/your/logs/alert_checker.log 2>&1: This redirects both standard output and error output to a log file (for debugging or monitoring).
+
+Step 3: Save and exit the cron editor
+After adding the line, save and close the crontab file. The cron job will be scheduled and automatically run every 5 minutes (or your desired interval).
+
+Step 4: Verify cron job is scheduled
+You can check that your cron job was added successfully by running:
+
+bash
+Copy
+Edit
+crontab -l
+This will list all cron jobs for your user. You should see the job you just added listed there.
+
+Step 5: Check the logs
+The output of the alert_checker.py script (including any errors or logs) will be saved to the alert_checker.log file. You can check the log with:
+
+bash
+Copy
+Edit
+tail -f /path/to/your/logs/alert_checker.log
+This will allow you to monitor the script's output in real-time.
+
+
+chmod +x /home/shobhakamlaskar/iot-api/alert_checker.py
+
+

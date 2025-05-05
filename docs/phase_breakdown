@@ -1,0 +1,65 @@
+    se Breakdown for the Upgraded IoT Project
+✅ Phase 1: Core Sensor-to-API Pipeline
+ESP8266 with DHT11 reads and sends data
+
+Flask API receives and stores it (via HTTP POST)
+
+Data stored in PostgreSQL using SQLAlchemy
+
+.env for secrets, API key validation
+
+Goal: End-to-end working data flow from sensor to database.
+
+📊 Phase 2: Web Dashboard
+Build frontend using React (or Flask + HTMX if preferred)
+
+Real-time readings + historical charts (Chart.js or Recharts)
+
+Add filters (All / 24h / 7d), export to CSV
+
+Goal: Functional dashboard to view and analyze data.
+
+🚨 Phase 3: Alerting System
+Threshold-based alert logic (temp > 30°C, humidity < 25%)
+
+Integrate:
+
+✅ Telegram bot
+
+✅ Email alerts via SMTP
+
+Background jobs via APScheduler or Celery (optional)
+
+Goal: Get notified of abnormal conditions in real-time.
+
+🔐 Phase 4: Authentication & Security
+Add login system (Flask-Login or JWT)
+
+Admin-only dashboard access
+
+API key/JWT protection on /api/data
+
+Goal: Secure endpoints and dashboard from unauthorized use.
+
+🐳 Phase 5: Dockerization & DevOps
+Containerize backend using Docker
+
+Add docker-compose.yml (with PostgreSQL)
+
+Set up NGINX reverse proxy + HTTPS (with Let's Encrypt)
+
+GitHub Actions for CI/CD (optional)
+
+Goal: Portable, deployable, production-ready setup.
+
+🧠 Phase 6 (Optional): Intelligence & Prediction
+Train a basic ML model for:
+
+Predictive maintenance
+
+Anomaly detection (unexpected sensor behavior)
+
+Display smart insights on dashboard
+
+Goal: Make the system proactive, not just reactive.timestamp = Column(Datetime, default=datetime.utcnow)
+

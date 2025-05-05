@@ -1,0 +1,103 @@
+✅ Phase 1: Core Sensor-to-API Pipeline
+Goal: End-to-end data flow from ESP8266 sensor to PostgreSQL database.
+
+🔧 Components:
+Hardware: ESP8266 + DHT11 sensor
+
+Firmware:
+
+Connected to Wi-Fi
+
+Reads temperature & humidity
+
+Sends JSON payload every 60 seconds via HTTP POST to Flask API
+
+Uses API key (X-API-KEY) for authentication
+
+Backend (Flask API):
+
+POST /api/data: Accepts sensor data (temperature & humidity)
+
+Validates API key from headers
+
+Saves data to PostgreSQL via SQLAlchemy
+
+Config values loaded from .env (secure, environment-specific)
+
+Database (PostgreSQL):
+
+Table: readings
+
+Stores: id, temperature, humidity, timestamp
+
+✅ Status: Completed
+📊 Phase 2: Lightweight Web Visibility (No Dashboard)
+Goal: Make data queryable, exportable, and observable without building a full frontend.
+
+🔧 Components:
+New API Endpoints:
+
+GET /api/latest: Fetch latest sensor reading
+
+GET /api/readings: Fetch historical readings, supports query filters:
+
+?limit=100, ?last_hours=24, ?start=YYYY-MM-DD&end=YYYY-MM-DD
+
+All responses in JSON — easy to consume by scripts or lightweight tools
+
+Security Model:
+
+/api/data: Protected via X-API-KEY (for writes)
+
+/api/latest, /api/readings: Protected via X-READ-KEY (for reads)
+
+READ_API_KEY=readonly123 set in .env
+
+Logging:
+
+All reads are logged to readings.log
+
+Command-line friendly (tail -f)
+
+CSV Export:
+
+Not explicitly implemented, but the API format is CSV-ready for download via tools like curl + jq or scripts.
+
+✅ Status: Completed (Minimalist Mode)
+🚨 Phase 3: Alerting System
+Goal: Detect abnormal conditions (overheat / dry air), send real-time notifications.
+
+🔧 Alert Conditions:
+Temperature > 30°C
+
+Humidity < 25%
+
+🔔 Features:
+Alert Checker Script (alert_checker.py):
+
+Checks latest reading
+
+Compares against thresholds
+
+Avoids duplicate alerts with .last_alert file
+
+Telegram Bot Integration:
+
+Sends alerts to your Telegram account
+
+Configured via .env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+
+Email Alerts via SMTP:
+
+Sends email notifications via Gmail (or other SMTP)
+
+Configured via .env:
+EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASSWORD, EMAIL_TO
+
+Automation:
+
+Configured with crontab to run every X minutes
+
+Alerts logged to alert_checker.log
+
+✅ Status: Completed

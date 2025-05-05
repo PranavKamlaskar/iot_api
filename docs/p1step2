@@ -1,0 +1,26 @@
+Step 2: Flask API with /api/data Endpoint
+✅ Step 2A: Project Structure (Recap)
+Make sure your project folder has this structure:
+
+bash
+Copy
+Edit
+iot-api/
+│
+├── app.py              # Main Flask app
+├── models.py           # SQLAlchemy model
+├── db_init.py          # DB setup script
+├── .env                # Secrets and DB URL
+├── requirements.txt    # Dependencies
+└── venv/               # Python virtual environment
+
+Step 2B: Install Flask & SQLAlchemy (if not yet)
+bash
+Copy
+Edit
+pip install flask
+pip freeze > requirements.txt
+vim app.py  									<!--check file-->
+python app.py  <!-- to test-->
+
+

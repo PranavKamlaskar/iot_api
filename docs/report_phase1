@@ -1,0 +1,82 @@
+Here’s a concise Phase 1 Report: Core Sensor-to-API Pipeline for your IoT project:
+
+✅ Phase 1: Core Sensor-to-API Pipeline — COMPLETED
+🎯 Objective
+Create a working end-to-end system that:
+
+Reads temperature and humidity from a DHT11 sensor via ESP8266
+
+Sends data to a backend Flask API
+
+Stores readings in a PostgreSQL database
+
+🧱 Components Implemented
+1. ESP8266 Firmware
+Connected to Wi-Fi (hotspot)
+
+Read data from DHT11 sensor (temp + humidity)
+
+Sent JSON data ({"temperature": ..., "humidity": ...}) via HTTP POST
+
+Included X-API-KEY for secure communication
+
+Sent data every 60 seconds
+
+2. Flask API
+Endpoints:
+
+POST /api/data: accepts and stores sensor data
+
+GET /api/latest: returns the most recent reading
+
+/: simple health check
+
+Features:
+
+API Key validation (X-API-KEY)
+
+.env file for secrets (API_KEY, DB_URL)
+
+Timezone-aware timestamps (default UTC)
+
+SQLAlchemy ORM with SensorReading model
+
+3. Database (PostgreSQL)
+Table: readings
+
+id: Primary key
+
+temperature (float)
+
+humidity (float)
+
+timestamp (auto-set via SQLAlchemy default)
+
+✅ Validation
+Verified data flow with Serial Monitor output (ESP8266)
+
+Successful POSTs to /api/data (HTTP code 201)
+
+Confirmed data storage in PostgreSQL
+
+Live retrieval of data via /api/latest
+
+🛠️ Tools & Libraries Used
+Arduino IDE (ESP8266, DHT, ArduinoJson, HTTPClient)
+
+Flask, SQLAlchemy, python-dotenv
+
+PostgreSQL
+
+Environment file: .env for secrets
+
+📦 Deliverables
+app.py: Flask backend
+
+models.py: SQLAlchemy schema
+
+db_init.py: Initializes the DB schema
+
+ESP8266 sketch: Sensor + Wi-Fi + JSON POST
+
+.env: contains API_KEY and DB_URL
