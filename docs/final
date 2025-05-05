@@ -1,0 +1,114 @@
+1. Initial Setup
+You had:
+
+A Python-based Flask API to record and serve sensor readings
+
+A background script alert_checker.py that checks for readings and triggers alerts
+
+✅ Working manually using:
+
+bash
+Copy
+Edit
+python3 -m alert_service.alert_checker
+2. Logging Instead of Print
+🔸 Problem: You were using print() which doesn't persist output from cron or Docker
+✅ Solution: Replaced print() with logging:
+
+python
+Copy
+Edit
+import logging
+logging.basicConfig(filename='alert.log', level=logging.INFO)
+logging.info("Latest Reading: Temp=%.1f°C, Humidity=%.1f%%, Time=%s", ...)
+3. Crontab Works, But Docker Doesn't
+🔸 Problem: Script worked in cron, but Docker version failed
+📍 Issues included:
+
+ModuleNotFoundError: No module named 'models'
+
+Wrong module name in python -m calls
+
+✅ Solutions:
+
+Ensured alert_checker.py uses relative imports, e.g.:
+
+python
+Copy
+Edit
+from alert_service.models import SensorReading, Base
+Ran it inside Docker as:
+
+bash
+Copy
+Edit
+python -m alert_service.alert_checker
+4. Docker Compose Setup
+Your docker-compose.yml included:
+
+yaml
+Copy
+Edit
+services:
+  web:
+    build: .
+    ports: ["5000:5000"]
+    environment:
+      DATABASE_URL: postgresql://iotuser:iotpassword@db:5432/iotdb
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: iotdb
+      POSTGRES_USER: iotuser
+      POSTGRES_PASSWORD: iotpassword
+
+  alerts:
+    build: ./alert_service
+    depends_on: [web, db]
+5. Docker Container Fails: Database Missing
+🔸 Problem:
+Logs showed:
+
+vbnet
+Copy
+Edit
+connection to server at "db"... failed: database "iotdb" does not exist
+✅ Solution:
+
+You manually created the iotdb in the Postgres container or waited for Docker to initialize it
+
+Ensured correct database credentials and environment variables
+
+6. Docker Container Fails: Wrong Module Name
+🔸 Problem:
+
+bash
+Copy
+Edit
+Error while finding module specification for 'alert_checker.py'
+✅ Solution:
+Used correct format:
+
+bash
+Copy
+Edit
+python -m alert_service.alert_checker
+instead of .py in module name
+
+7. App Not Accessible on GCP
+🔸 Problem:
+Your app at http://34.172.219.34:5000 was inaccessible
+✅ Solutions:
+
+Verified Docker container was listening on 0.0.0.0
+
+Opened port 5000 in your GCP firewall rules
+
+Ensured Flask was started with:
+
+python
+Copy
+Edit
+app.run(host="0.0.0.0", port=5000)
+
