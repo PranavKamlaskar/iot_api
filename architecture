@@ -1,0 +1,79 @@
+[ESP Device / Sensor]
+        │
+        ▼
+[Sends data via HTTP POST with X-API-KEY]
+        │
+        ▼
+  ┌──────────────────────────────┐
+  │         web (Flask App)      │
+  │    - Receives sensor data    │
+  │    - Authenticates API key   │
+  │    - Saves to PostgreSQL DB  │
+  │    - Exposes REST endpoints  │
+  └──────────────────────────────┘
+        │
+        ▼
+  ┌──────────────────────────────┐
+  │        db (PostgreSQL)       │
+  │     - Stores all readings    │
+  └──────────────────────────────┘
+        ▲
+        │
+        ▼
+  ┌──────────────────────────────┐
+  │    alerts (Python Service)   │
+  │ - Periodically checks latest │
+  │   reading from DB            │
+  │ - Compares with thresholds   │
+  │ - Sends Telegram + Email     │
+  │   alert if breached          │
+  └──────────────────────────────┘
+
+    ↕ (via shared `.env` + Docker network)
+
+
+
+
+
+Sensor → Web App
+
+The ESP32 (or similar) sends data like { "temperature": 34.2, "humidity": 18.5 } via POST /api/data with the header X-API-KEY.
+
+Flask receives, validates, logs it to readings.log, and stores it in the PostgreSQL DB.
+
+Web App → DB
+
+SQLAlchemy ORM stores each reading with a timestamp.
+
+The API also serves /api/latest, /api/readings, and /dashboard.
+
+Alerts Service (Separate container)
+
+Runs alert_checker.py in a loop every 60s.
+
+Loads .env, connects to the same DB (via postgresql://iotuser:iotpassword@db:5432/iotdb).
+
+Pulls the most recent sensor reading.
+
+Compares against thresholds: TEMP > 30°C or HUM < 25%.
+
+If alert is triggered:
+
+Sends a Telegram message.
+
+Sends an Email.
+
+Logs to alert.log.
+
+Writes timestamp to .last_alert to avoid duplicate alerts.
+
+🛠 Tools and Services Used
+Component	Role
+Flask	REST API server
+SQLAlchemy	ORM for DB access
+PostgreSQL	Relational database
+Docker Compose	Multi-container orchestration
+dotenv	Loads .env variables
+Requests	For sending Telegram alerts
+smtplib	For sending email alerts
+cron / loop	For scheduling alerts every 60s

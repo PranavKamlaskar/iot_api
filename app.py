@@ -12,9 +12,15 @@ import io
 from flask import render_template
 import logging
 
+#app.py Receives, stores, and serves temperature/humidity data
+#.env    Keeps secrets/config clean and secure
+#alert_checker.py    Pulls data from /api/latest and sends alerts
+#docker-compose.yml  Runs web, db, and alerts as containers
 
 
-# Logging setup
+
+
+# Logging setup  Logs all received readings.This helps with debugging and auditing incoming data.
 logging.basicConfig(
         filename="readings.log",
         level=logging.INFO,
@@ -23,7 +29,7 @@ logging.basicConfig(
 
 
 
-#load env vars
+#load env vars  
 load_dotenv()
 API_KEY= os.getenv("API_KEY")
 DB_URL= os.getenv("DB_URL")
@@ -32,7 +38,7 @@ READ_API_KEY = os.getenv("READ_API_KEY")
 
 
 
-#db setup
+#db setup    Connects to PostgreSQL using SQLAlchemy. Creates tables if they don’t exist (via Base.metadata.create_all()).
 engine = create_engine(DB_URL)
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
@@ -42,7 +48,7 @@ app = Flask(__name__)
 @app.route("/api/data", methods=["POST"])
 def receive_data():
     # this line is used to check API key
-    if request.headers.get("X-API-KEY") != API_KEY:
+    if request.headers.get("X-API-KEY") != API_KEY:         #Requires an API key.Stores JSON { temperature, humidity } in the DB.Logs the reading.
         return jsonify({"error": "unauthorized access"}), 401
 
     data = request.get_json()
@@ -72,7 +78,7 @@ def index():
 
 @app.route("/api/latest", methods=["GET"])
 def latest_reading():
-    if request.headers.get("X-READ-KEY") != READ_API_KEY:
+    if request.headers.get("X-READ-KEY") != READ_API_KEY:           #Requires a read key.Returns the most recent reading
         return jsonify({"error": "unauthorized access"}), 401
 
     session= Session()

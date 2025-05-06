@@ -15,6 +15,17 @@ import logging
 import time
 
 
+
+#How it Fits In Your Docker Setup
+#Component   Role
+#web service (Flask) Stores sensor data
+#db service (Postgres)   Stores persistent readings
+#alerts service (this script)    Periodically checks latest data, triggers alerts
+#.env    Provides configuration across all services
+
+
+
+
 # Load .env variables
 load_dotenv()
 DB_URL = os.getenv("DB_URL")
@@ -27,14 +38,14 @@ EMAIL_USER = os.getenv("EMAIL_USER")
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 EMAIL_TO = os.getenv("EMAIL_TO")
 
-# Thresholds
+# Thresholds .last_alert prevents sending duplicate alerts for the same data.
 TEMP_THRESHOLD = 30.0
 HUM_THRESHOLD = 25.0
 
 # Alert state file
 ALERT_STATE_FILE = ".last_alert"
 
-# DB setup
+# DB setup . Connects to the same PostgreSQL database used by the Flask app .Queries the latest reading.
 engine = create_engine(DB_URL)
 Session = sessionmaker(bind=engine)
 
@@ -99,7 +110,8 @@ def send_email_alert(subject, body):
 
 # --- Main logic ---
 
-def check_alert_conditions():
+def check_alert_conditions():                           #etches the most recent reading.Compares it with the last alert time to avoid redundancy. Sends alert if:Temp > 30°C and Humidity < 25%
+
     session = Session()
     reading = session.query(SensorReading).order_by(SensorReading.timestamp.desc()).first()
     session.close()
@@ -136,7 +148,7 @@ def check_alert_conditions():
         print("✅ Normal conditions.")
         logging.info("Conditions normal. Temp=%.1f, Humidity=%.1f", reading.temperature, reading.humidity)
         
-if __name__ == "__main__":
+if __name__ == "__main__":                                                              #Designed to work as a background service inside a Docker container.
     while True:
         check_alert_conditions()
         time.sleep(60)
