@@ -1,0 +1,633 @@
+    1  sudo apt update && sudo apt upgrade -y
+    2  sudo usermod -aG docker $USER
+    3  # Add Docker's official GPG key:
+    4  sudo apt-get update
+    5  sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    6  for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+    7  # Add Docker's official GPG key:
+    8  sudo apt-get update
+    9  sudo apt-get install ca-certificates curl
+   10  sudo install -m 0755 -d /etc/apt/keyrings
+   11  sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+   12  sudo chmod a+r /etc/apt/keyrings/docker.asc
+   13  echo   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+   14    $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" |   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+   15  sudo apt-get update
+   16  sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+   17  sudo apt install -y git curl build-essential python3-pip  nginx sqlite3 ufw
+   18  sudo usermod -aG docker $USER
+   19  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+   20  source ~/.bashrc
+   21  nvm install --lts
+   22  nvm use --lts
+   23  npm install -g yarn pm2
+   24  mkdir iot-platform && cd iot-platform
+   25  mkdir backend frontend devices docker infra docs
+   26  touch docker-compose.yml README.md
+   27  ls
+   28  echo "# lv2-temp-monitor" >> README.md
+   29  ls
+   30  git init .
+   31  git add . 
+   32  git commit -m "first commit"
+   33  git branch -M main
+   34  git remote add origin https://github.com/PranavKamlaskar/lv2-temp-monitor.git
+   35  git commit -m "first commit"
+   36  git remote -v
+   37  git remote set-url origin git@github.com:PranavKamlaskar/lv2-temp-monitor.git
+   38  # Set identity (MUST DO THIS FIRST)
+   39  git config --global user.email "shobhakamlaskar@gmail.com"
+   40  git config --global user.name "Shobha Kamlaskar"
+   41  # Initialize repo
+   42  git init
+   43  git branch -M main
+   44  # Add remote (SSH)
+   45  git remote add origin git@github.com:PranavKamlaskar/lv2-temp-monitor.git
+   46  # Commit and push
+   47  git add .
+   48  git commit -m "Initial commit"
+   49  git push -u origin main
+   50  # Set identity (MUST DO THIS FIRST)
+   51  git config --global user.email "shobhakamlaskar@gmail.com"
+   52  git config --global user.name "Shobha Kamlaskar"
+   53  # Initialize repo
+   54  git init
+   55  git branch -M main
+   56  # Add remote (SSH)
+   57  git remote add origin git@github.com:PranavKamlaskar/lv2-temp-monitor.git
+   58  # Commit and push
+   59  git add .
+   60  git commit -m "Initial commit"
+   61  git push -u origin main
+   62  ssh-keygen -t ed25519 -C "shobhakamlaskar@gmail.com"
+   63  cat ~/.ssh/id_ed25519.pub
+   64  ssh -T git@github.com
+   65  git remote remove origin
+   66  git remote add origin git@github.com:PranavKamlaskar/lv2-temp-monitor.git
+   67  git push -u origin main --force
+   68  ls
+   69  vim README.md 
+   70  ls
+   71  sudo apt update && sudo apt install vim
+   72  ls
+   73  vim README.md 
+   74  history
+   75  vim README.md 
+   76  ls -a 
+   77  echo "node_modules/" >> .gitignore
+   78  echo ".env" >> .gitignore
+   79  ls
+   80  cd backend/
+   81  ls
+   82  npm init -y 
+   83  npm install express dotenv cors morgan body-parser
+   84  npm install --save-dev nodemon
+   85  touchindex.js
+   86  touch index.js
+   87  mkdir routes
+   88  touch routes/data.js
+   89  touch .env
+   90  mkdir config
+   91  touch config/db.js
+   92  vim index.js 
+   93  vim routes/data.js 
+   94  ls
+   95  vim package.json 
+   96  npm run dev 
+   97  vim package.json 
+   98  npm run dev 
+   99  vim package.json 
+  100  npm run dev 
+  101  curl -X POST http://localhost:4000/api/data -H "Content-Type: application/json" -d '{"temperature": 28.5, "humidity": 40, "timestamp": "2025-05-03T10:00:00Z"}'
+  102  cd ..
+  103  cd
+  104  ls
+  105  rm -rf iot-platform/
+  106  sudo ufw allow 22/tcp  # SSH
+  107  sudo apt update && sudo apt upgrade -y
+  108  mkdir -p ~/iot-light-system/{app,configs}
+  109  npx create-next-app@latest app   --ts   --src-dir   --import-alias "@/*"   --use-npm   --eslint
+  110  ls
+  111  cd app/
+  112  ls
+  113  ls -a
+  114  echo "PORT=3000" > .env.local
+  115  npm run dev
+  116  ls
+  117  cd ..
+  118  ls
+  119  cd app/
+  120  ls
+  121  vim Dockerfile
+  122  vim docker-compose.yml
+  123  ls
+  124  ls -a 
+  125  sudo docker-compose up --build
+  126  sudo apt update
+  127  sudo apt install docker-compose-plugin
+  128  docker compose version
+  129  sudo ln -s /usr/libexec/docker/cli-plugins/docker-compose /usr/bin/docker-compose
+  130  # From your app directory
+  131  docker compose up --build
+  132  ls -la docker-compose.yml
+  133  ls -la
+  134  vim docker-compose.yml
+  135  docker compose up --build
+  136  vim docker-compose.yml
+  137  docker compose up --build
+  138  vim docker-compose.yml
+  139  ls
+  140  cd iot-api/
+  141  ls
+  142  vim app.py 
+  143  vim app.py
+  144  vim app.py 
+  145  sudo apt update
+  146  sudo apt install postgresql postgresql-contrib
+  147  ls
+  148  rm -rf app/ iot-light-system/
+  149  ls
+  150  sudo systemctl start postgresql
+  151  sudo systemctl enable postgresql
+  152  sudo -u postgres psql
+  153  ls
+  154  cd
+  155  ls
+  156  vim .env
+  157  rm .env 
+  158  ls
+  159  mkdir iot-api
+  160  cd iot-api/
+  161  vim .env
+  162  vim models.py
+  163  ls
+  164  vim db_init.py
+  165  python db_init.py
+  166  history
+  167  python db_init.py
+  168  sudo apt install python3-pip python3-dev -y
+  169  sudo apt install python3-venv -y
+  170  python3 -m venv venv
+  171  source venv/bin/activate
+  172  python db_init.py 
+  173  pip install sqlalchemy
+  174  python db_init.py 
+  175  pip install dotenv
+  176  python db_init.py 
+  177  pip install psycopg2
+  178  pip uninstall psycopg2
+  179  pip install psycopg2-binary
+  180  sudo apt-get update
+  181  python db_init.py 
+  182  ls
+  183  mkdir docs
+  184  ls
+  185  vim docs/p1step1
+  186  vim docs/phase_breakdown
+  187  ls
+  188  vim docs/p1step1
+  189  vim docs/step1_breakdown
+  190  vim docs/phase1_steps_breakdown
+  191  ls docs/
+  192  vim docs/p1step1
+  193  history
+  194  ls
+  195  vim docs/
+  196  vim docs/p1step1
+  197  ls
+  198  vim app.py
+  199  touch app.py
+  200  ls -a 
+  201  vim requirements.txt
+  202  pip freeze > requirements.txt
+  203  vim requirements.txt 
+  204  pip install flask
+  205  pip freeze > requirements.txt
+  206  vim app.py 
+  207  python app.py
+  208  vim app.py 
+  209  python app.py
+  210  curl -X POST http://localhost:5000/api/data   -H "Content-Type: application/json"   -H "X-API-KEY: your_secret_api_key"   -d '{"temperature": 28.5, "humidity": 60}'
+  211  curl -X POST http://curl -X POST http://localhost:5000/api/data \:5000/api/data   -H "Content-Type: application/json"   -H "X-API-KEY: your_secret_api_key"   -d '{"temperature": 28.5, "humidity": 60}'
+  212  curl -X POST http://34.66.149.71:5000/api/data   -H "Content-Type: application/json"   -H "X-API-KEY: your_secret_api_key"   -d '{"temperature": 28.5, "humidity": 60}'
+  213  history
+  214  ls
+  215  vim docs/p1step2
+  216  python app.py
+  217  curl -X POST http://localhost:5000/api/data   -H "Content-Type: application/json"   -H "X-API-KEY: your_secret_api_key"   -d '{"temperature": 28.5, "humidity": 60}'
+  218  curl -X POST http://34.66.149.71:5000/api/data   -H "Content-Type: application/json"   -H "X-API-KEY: your_secret_api_key"   -d '{"temperature": 28.5, "humidity": 60}'
+  219  vim app.py 
+  220  sudo lsof -i :5000
+  221  python app.py
+  222  curl -X POST http://34.66.149.71:5000/api/data   -H "Content-Type: application/json"   -H "X-API-KEY: your_secret_api_key"   -d '{"temperature": 28.5, "humidity": 60}'
+  223  curl -X POST http://localhost:5000/api/data   -H "Content-Type: application/json"   -H "X-API-KEY: your_secret_api_key"   -d '{"temperature": 28.5, "humidity": 60}'
+  224  curl -X POST http://34.66.149.71:5000/api/data   -H "Content-Type: application/json"   -H "X-API-KEY: your_secret_api_key"   -d '{"temperature": 28.5, "humidity": 60}'
+  225  sudo apt install lsof
+  226  sudo lsof -i :5000
+  227  sudo apt install net-tools -y
+  228  sudo netstat -tuln | grep 5000
+  229  sudo ufw allow 5000
+  230  python app.py
+  231  vim app.py 
+  232  python app.py
+  233  ls
+  234  vim .env 
+  235  vim .env
+  236  python app.py
+  237  cat app.py
+  238  vim app.py
+  239  python app.py
+  240  vim app.py
+  241  vim app.py 
+  242  vim models.py 
+  243  vim app.py 
+  244  python app.py
+  245  vim models.py 
+  246  cat app.py
+  247  vim app.py
+  248  vim models.py
+  249  vim app.py
+  250  python app.py
+  251  vim models.py
+  252  vim app.py
+  253  python app.py
+  254  ls
+  255  ls -a
+  256  python app.py
+  257  ls
+  258  ls -a 
+  259  rm sensor.db
+  260  db_init.py
+  261  python db_init.py 
+  262  vim app.py
+  263  vim app.py 
+  264  mkdir backup
+  265  cp app.py backup/.
+  266  vim app.py 
+  267  python app.py
+  268  vim app.py
+  269  vim models.py 
+  270  vim app.py
+  271  python app.py
+  272  ls
+  273  ls docs/
+  274  ls
+  275  ls docs/
+  276  vim p1step3
+  277  vim docs/p1step3
+  278  ls
+  279  cat app.py 
+  280  vim models.py 
+  281  ls
+  282  vim docs/report_phase1
+  283  npm create vite@latest iot-dashboard -- --template react
+  284  ls
+  285  rm -rf iot-dashboard/
+  286  cd iot-api/
+  287  ls
+  288  npm create vite@latest iot-dashboard -- --template react
+  289  cd iot-dashboard
+  290  npm install
+  291  npm install axios recharts
+  292  npm install -D tailwindcss postcss autoprefixer
+  293  npx tailwindcss init -p
+  294  ls
+  295  rm -rf node_modules package-lock.json
+  296  npm install
+  297  npm install -D tailwindcss postcss autoprefixer
+  298  npx tailwindcss init --full -p
+  299  npm install -g tailwindcss
+  300  tailwindcss init -p
+  301  npm list tailwindcss postcss autoprefixer
+  302  npm install --save-dev tailwindcss@latest postcss@latest autoprefixer@latest
+  303  ./node_modules/.bin/tailwindcss init --full -p
+  304  ls
+  305  cd ..
+  306  ls
+  307  rm -rf iot-dashboard/
+  308  cd ..
+  309  ls
+  310  node -v
+  311  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+  312  \. "$HOME/.nvm/nvm.sh"
+  313  nvm install 22
+  314  nvm -v
+  315  npm -v 
+  316  npx create-react-app iot-dashboard
+  317  ls
+  318  ls iot-
+  319  ls
+  320  rm -rf iot-dashboard/
+  321  cd iot-api/
+  322  ls
+  323  vim app.py 
+  324  curl http://34.66.149.71:5000/api/readings
+  325  source venv/bin/activate
+  326  python app.py 
+  327  vim app.py 
+  328  python app.py 
+  329  vim app.py 
+  330  curl -o readings.csv http://34.66.149.71:5000/api/readings.csv
+  331  curl -o readings_24h.csv "http://34.66.149.71:5000/api/readings.csv?range=24h"
+  332  vim app.py 
+  333  python app.py 
+  334  vim app.py 
+  335  python app.py 
+  336  ls
+  337  mkdir templates
+  338  vim templates/dashboard.html
+  339  vim app.py 
+  340  python app.py 
+  341  vim app.py 
+  342  ls
+  343  vim .env 
+  344  vim app.py 
+  345  curl -H "X-READ-KEY: readonly123" http://<your-ip>:5000/api/latest
+  346  curl -H "X-READ-KEY: readonly123" http://34.66.149.71:5000/api/latest
+  347  ls
+  348  vim docs/report_phase2
+  349  vim docs/phase2
+  350  python app.py 
+  351  ls
+  352  vim alert_checker.py
+  353  ls
+  354  vim alert_checker
+  355  mv alert_checker alert_checker.py
+  356  ls
+  357  python alert_checker.py
+  358  mv alert_checker.py alert_checker
+  359  vim alert_checker
+  360  ls
+  361  mv alert_checker alert_checker.py
+  362  python alert_checker.py
+  363  vim alert_checker.py
+  364  mv alert_checker.py alert_checker
+  365  vim alert_checker.
+  366  vim alert_checker
+  367  mv alert_checker alert_checker.py
+  368  python alert_checker.py
+  369  vim .env
+  370  mv alert_checker.py alert_checker
+  371  vim alert_checker
+  372  mv alert_checker alert_checker.py
+  373  python alert_checker.py
+  374  vim alert_checker.py
+  375  python alert_checker.py
+  376  mv alert_checker.py alert_checker
+  377  vim alert_checker 
+  378  mv alert_checker alert_checker.py
+  379  python alert_checker.py
+  380  pip install requests
+  381  python alert_checker.py
+  382  pip install smtplib
+  383  vim .env
+  384  ls
+  385  mv alert_checker.py alert_checker
+  386  vim alert_checker 
+  387  mv alert_checker alert_checker.py
+  388  crontab -e 
+  389  sudo apt install cron
+  390  crontab -e
+  391  ls
+  392  cd venv/bin/python
+  393  cd venv/bin
+  394  ls
+  395  pwd
+  396  ls
+  397  cd ..
+  398  ls
+  399  cd ..
+  400  ls
+  401  pwd
+  402  ls
+  403  ls -a 
+  404  sudo apt install tree -a 
+  405  sudo apt install tree -y 
+  406  tree -L 2
+  407  crontab -e
+  408  chmod +x /home/shobhakamlaskar/iot-api/alert_checker.py
+  409  vim docs/report_till_phase3
+  410  vim docs/phase3
+  411  ls
+  412  mkdir espcode
+  413  vim espcode/espcode
+  414  mkdir externalfiles
+  415  crontab -l
+  416  crontab -l >> externalfiles/cron
+  417  cd
+  418  ls
+  419  cd iot-api/
+  420  ls
+  421  touch Dockerfile
+  422  touch docker-compose.yml
+  423  vim Dockerfile 
+  424  source venv/bin/activate
+  425  pip freeze > requirements.txt
+  426  vim requirements.txt 
+  427  vim Dockerfile 
+  428  ls
+  429  vim docker-compose.yml 
+  430  vim .env
+  431  docker-compose up --build
+  432  vim Dockerfile 
+  433  docker-compose up --build
+  434  sudo docker ps -a 
+  435  sudo lsof -i :5000
+  436  vim Dockerfile 
+  437  vim docker-compose.yml 
+  438  sudo docker ps 
+  439  sudo docker rm -f f21bfd1f8ca1
+  440  docker-compose up --build
+  441  vim .env
+  442  sudo docker-compose down
+  443  docker-compose up --build
+  444  mkdir alert_service
+  445  cd alert_service/
+  446  cd ..
+  447  cp alert_checker.py alert_service/.
+  448  cd alert_service/
+  449  ls
+  450  pip freeze >> requirements.txt
+  451  vim Dockerfile
+  452  cd ..
+  453  ls
+  454  vim docker-compose.yml 
+  455  vim alert_service/
+  456  vim alert_service/Dockerfile 
+  457  vim crontab
+  458  docker-compose build
+  459  vim docker-compose.yml 
+  460  mv docker-compose.yml docker-compose
+  461  vim docker-compose 
+  462  mv docker-compose docker-compose.yml
+  463  docker-compose build
+  464  ls
+  465  ls alert_service/
+  466  vim crontab
+  467  ls -a 
+  468  ls alert_service/
+  469  ls -a alert_service/
+  470  cp crontab alert_service/.
+  471  ls
+  472  vim crontab 
+  473  docker-compose build
+  474  docker-compose logs -f alerts
+  475  docker-compose up -d
+  476  curl -X POST http://localhost:5000/api/data -H "x-api-key: your-secure-api-key" -H "Content-Type: application/json" -d '{"temperature": 35.5, "humidity": 20.0}'
+  477  curl -X POST http://34.172.219.34:5000/api/data -H "x-api-key: your-secure-api-key" -H "Content-Type: application/json" -d '{"temperature": 35.5, "humidity": 20.0}'
+  478  docker exec -it iot-api-web-1 curl -X POST http://localhost:5000/api/data   -H "x-api-key: your-secure-api-key"   -H "Content-Type: application/json"   -d '{"temperature": 35.5, "humidity": 20.0}'
+  479  sudo docker ps -a 
+  480  docker-compose down
+  481  cd iot-api/
+  482  ls
+  483  sudo docker-compose down
+  484  source venv/bin/activate
+  485  ls
+  486  python app.py
+  487  cat app.py
+  488  ls
+  489  sudo docker-compose build 
+  490  sudo docker-compose up -d 
+  491  vim docker-compose.yml 
+  492  docker-compose logs web
+  493  vim docker-compose.yml 
+  494  mv docker-compose.yml docker-compose
+  495  vim docker-compose 
+  496  mv docker-compose docker-compose.yml
+  497  vim .env
+  498  docker-compose down -v
+  499  docker-compose up -d 
+  500  docker-compose logs web
+  501  vim docker-compose.yml 
+  502  docker-compose down -v
+  503  docker-compose up -d 
+  504  docker-compose logs web
+  505  cat docker-compose.yml 
+  506  vim .env
+  507  vim docker
+  508  vim docker-compose.yml 
+  509  docker-compose down
+  510  docker-compose up --build -d 
+  511  docker-compose logs web
+  512  vim docker-compose.yml 
+  513  vim .env
+  514  cat docker-compose.yml 
+  515  docker-compose down -v
+  516  #docker-compose up -d 
+  517  docker-compose up -d 
+  518  docker-compose logs web
+  519  docker-compose exec web python
+  520  cd iot-api/
+  521  ls
+  522  history
+  523  vim app.py 
+  524  vim alert_service/alert_checker.py 
+  525  cd alert_service/
+  526  ls
+  527  pwd
+  528  vim alert_checker.py 
+  529  cat alert_checker.py 
+  530  python3 -c "import os; from dotenv import load_dotenv; load_dotenv(); print(os.getenv('EMAIL_USER'))"
+  531  source venv/bin/activate
+  532  cd ..
+  533  source venv/bin/activate
+  534  cd alert_service/
+  535  python3 -c "import os; from dotenv import load_dotenv; load_dotenv(); print(os.getenv('EMAIL_USER'))"
+  536  crontab -e
+  537  ls
+  538  python3 alert_checker.py
+  539  pip install models
+  540  cd ..
+  541  ls
+  542  python3 -m alert_service.alert_checker
+  543  vim .env
+  544  python3 -m alert_service.alert_checker
+  545  vim .env
+  546  python3 -m alert_service.alert_checker
+  547  vim docker-compose.yml 
+  548  ls
+  549  ls alert_service/
+  550  ls -a alert_service/
+  551  rm alert_service/.last_alert
+  552  cat alert_service/alert_checker.py 
+  553  cat app.py
+  554  vim alert_service/alert_checker.py 
+  555  chmod +x alert_service/alert_checker.py
+  556  ./alert_service/alert_checker.py
+  557  python3 -m alert_service.alert_checker
+  558  crontab -e
+  559  vim alert_service/alert_checker.py 
+  560  crontab -e
+  561  vim alert_service/alert_checker.py 
+  562  crontab -e
+  563  tail -f /home/shobhakamlaskar/iot-api/alert_checker.log
+  564  tail -n 50 alert.log
+  565  python -m alert_service.alert_checker
+  566  vim alert_service/test_data.py
+  567  python -m alert_service.alert_checker
+  568  rm alert_service/test_data.py
+  569  vim alert_service/alert_checker.py 
+  570  python -m alert_service.alert_checker
+  571  vim alert_service/alert_checker.py 
+  572  vim docker-compose.yml 
+  573  cat docker-compose.yml 
+  574  ls
+  575  ls alert_service/
+  576  vim alert_service/Dockerfile 
+  577  vim docker-compose.yml 
+  578  vim .env
+  579  vim alert_service/alert_checker.py 
+  580  docker compose up --build -d
+  581  vim docker-compose.yml 
+  582  docker compose up --build -d
+  583  docker compose logs -f alerts
+  584  docker-compose down -v
+  585  cp models.py alert_service/
+  586  vim alert_service/alert_checker.py 
+  587  docker compose build
+  588  docker compose up -d
+  589  docker-compose logs web
+  590  vim docker-compose.yml 
+  591  docker compose down -v
+  592  docker compose up -d
+  593  docker-compose logs web
+  594  sudo docker ps 
+  595  docker compose logs web
+  596  docker compose logs alerts
+  597  vim .env
+  598  vim docker-compose.yml 
+  599  vim .env
+  600  vim alert_service/alert_checker.py 
+  601  vim alert_service/Dockerfile 
+  602  docker compose down
+  603  docker compose build
+  604  docker compose up -d
+  605  docker compose logs -f web
+  606  docker compose logs -f alerts
+  607  docker compose down
+  608  ssh-keygen -t ed25519 -C "shobhakamlaskar@gmail.com"
+  609  eval "$(ssh-agent -s)"
+  610  ssh-add /home/shobhakamlaskar/.ssh/github_key
+  611  cat /home/shobhakamlaskar/.ssh/github_key.pub
+  612  history
+  613  ssh -T git@github.com
+  614  git
+  615  ls ~
+  616  ls -a ~
+  617  git init
+  618  git remote add origin git@github.com:PranavKamlaskar/iot_api.git
+  619  git add .
+  620  git commit -m "First commit"
+  621  git branch -M main
+  622  git push -u origin main
+  623  vim docs/final
+  624  vim .gitignore
+  625  git add . 
+  626  git commit -m "second commit "
+  627  git push -u origin main
+  628  ls
+  629  ls -a 
+  630  ls
+  631  cd iot-api/
+  632  ls
+  633  history >> history.txt
